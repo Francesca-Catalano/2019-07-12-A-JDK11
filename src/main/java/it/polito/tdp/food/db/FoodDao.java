@@ -114,9 +114,10 @@ public class FoodDao {
 	}
 	
 	public List<Food> listFoodByPortions(Map<Integer,Food> map, int portion){
-		String sql = "select distinct `food_code` " + 
-				"from `portion` " + 
-				"where portion_id <=? " ;
+		String sql = "select distinct food_code " + 
+				" from portion " + 
+				" group by food_code " + 
+				" having  count(distinct portion_id) = ? " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
@@ -153,11 +154,13 @@ public class FoodDao {
 				"where f1.condiment_code=f2.condiment_code and f1.food_code>f2.food_code " + 
 				"and c.condiment_code=f1.condiment_code " + 
 				"and f1.food_code IN (select food_code " + 
-				"                      from portion " + 
-				"                where portion_id <=?) " + 
+				" from portion " + 
+				" group by food_code " + 
+				" having  count(distinct portion_id) =?) " + 
 				"and f2.food_code IN (select food_code " + 
-				"                      from portion " + 
-				"                where portion_id <= ?) "+
+				" from portion " + 
+				" group by food_code " + 
+				" having  count(distinct portion_id) = ?) " + 
 				"group by f1.food_code,f2.food_code ";
 		try {
 			Connection conn = DBConnect.getConnection() ;

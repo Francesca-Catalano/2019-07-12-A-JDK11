@@ -1,9 +1,12 @@
 package it.polito.tdp.food.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
@@ -54,6 +57,7 @@ for (Adiacenza a : this.dao.listAdiacenze(mapId, n))
 	
 	public int VertexSize()
 	{
+		
 		return this.graph.vertexSet().size();
 	}
 
@@ -61,9 +65,42 @@ for (Adiacenza a : this.dao.listAdiacenze(mapId, n))
 		// TODO Auto-generated method stub
 		return this.graph.edgeSet().size();
 	}
-	public Set<Food> VertexSet()
-	{
-		return this.graph.vertexSet();
+	public List<Food> VertexSet()
+	{ List<Food> list = new ArrayList<>(this.graph.vertexSet());
+		Collections.sort(list);
+		return list;
 	}
+
+	public List<FoodAndCalories> CercaCalorie(Food f, int n) {
+		List<FoodAndCalories> list = new ArrayList<>();
+		Collections.sort(this.dao.listAdiacenze(mapId, n));
+		if(Graphs.neighborListOf(this.graph, f).size()==0)
+		{
+			return null;
+		}
+		else if(Graphs.neighborListOf(this.graph, f).size()<=5)
+		{
+			//System.out.println( "size :"+Graphs.neighborListOf(this.graph, f).size());
+			
+			for(Food v :Graphs.neighborListOf(this.graph, f))
+			{
+				DefaultWeightedEdge e = this.graph.getEdge(f, v);
+				double peso = this.graph.getEdgeWeight(e);
+				list.add(new FoodAndCalories(v, peso));
+			}
+			return list;
+		}
+		for(int i=0; i<5;i++)
+		{
+			Food v = Graphs.neighborListOf(this.graph, f).get(i);
+				DefaultWeightedEdge e = this.graph.getEdge(f, v);
+				double peso = this.graph.getEdgeWeight(e);
+				list.add(new FoodAndCalories(v, peso));
+		}
+		return list;
+		
+	}
+	
+	
 	
 }

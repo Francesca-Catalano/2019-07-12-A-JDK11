@@ -1,6 +1,6 @@
 package it.polito.tdp.food.model;
 
-public class Adiacenza {
+public class Adiacenza implements Comparable<Adiacenza> {
 	private Food f1;
 	private Food f2;
 	private double peso;
@@ -18,6 +18,11 @@ public class Adiacenza {
 	}
 	public double getPeso() {
 		return peso;
+	}
+	@Override
+	public int compareTo(Adiacenza o) {
+		// TODO Auto-generated method stub
+		return -(int)(this.peso-o.getPeso());
 	}
 
 }

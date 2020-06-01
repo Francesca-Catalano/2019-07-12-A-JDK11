@@ -5,9 +5,12 @@
 package it.polito.tdp.food;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.food.model.Adiacenza;
 import it.polito.tdp.food.model.Food;
+import it.polito.tdp.food.model.FoodAndCalories;
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -70,6 +73,7 @@ public class FoodController {
 
 		this.txtResult.appendText("Vertex size:"+this.model.VertexSize()+"\n");
 		this.txtResult.appendText("Edge size:"+this.model.EdgeSize()+"\n");
+		this.boxFood.getItems().clear();
 		this.boxFood.getItems().addAll(this.model.VertexSet());
 		this.btnCalorie.setDisable(false);
     	
@@ -79,6 +83,27 @@ public class FoodController {
     void doCalorie(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Analisi calorie...");
+    	Food f = this.boxFood.getValue();
+    	if(f==null)
+    	{
+
+    		this.txtResult.appendText("Selezionare un cibo!\n");
+    		return;	
+    	}
+    	String s = this.txtPorzioni.getText();
+    	int n= Integer.parseInt(s);
+    List<FoodAndCalories> list =	this.model.CercaCalorie(f,n);
+    if(list==null)
+    {
+    	this.txtResult.appendText("Nessun arco adiacente!\n");
+		return;	
+    }
+    this.txtResult.appendText("CIBO SELEZIONATO:  "+f.getDisplay_name());
+    this.txtResult.appendText("5 CIBI ADIACENTI CON PESO MAX:\n");
+    for(FoodAndCalories l : list)
+    {
+    	this.txtResult.appendText(l.getF()+" "+ String.valueOf(l.getPeso())+"\n");
+    }
     }
 
     @FXML
