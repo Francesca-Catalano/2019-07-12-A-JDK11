@@ -100,7 +100,29 @@ for (Adiacenza a : this.dao.listAdiacenze(mapId, n))
 		return list;
 		
 	}
+
+	public Graph<Food, DefaultWeightedEdge> getGraph() {
+		return graph;
+	}
 	
 	
+	public List<FoodAndCalories> ListFAC(Food f)
+	{	
+		List<FoodAndCalories> list = new ArrayList<>();
+		
+		if(Graphs.neighborListOf(this.graph, f).size()==0)
+		{
+			return null;
+		}
+		
+		for(Food v :Graphs.neighborListOf(this.graph, f))
+	{
+		DefaultWeightedEdge e = this.graph.getEdge(f, v);
+		double peso = this.graph.getEdgeWeight(e);
+		list.add(new FoodAndCalories(v, peso));
+	}
+		Collections.sort(list);
+	return list;
+	}
 	
 }

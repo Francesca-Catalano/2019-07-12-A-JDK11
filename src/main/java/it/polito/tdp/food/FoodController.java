@@ -76,6 +76,7 @@ public class FoodController {
 		this.boxFood.getItems().clear();
 		this.boxFood.getItems().addAll(this.model.VertexSet());
 		this.btnCalorie.setDisable(false);
+		this.btnSimula.setDisable(false);
     	
     }
     
