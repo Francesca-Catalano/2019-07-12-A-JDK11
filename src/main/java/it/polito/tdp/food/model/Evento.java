@@ -10,11 +10,12 @@ public class Evento implements Comparable<Evento> {
 	 private Double time;
 	 private Stazione stazione;
 	 private Food food;
+	 private EventType tipo;
 	 
 	public Evento(Double time,EventType tipo, Stazione stazione, Food food) {
 		super();
 		this.time = time;
-		
+		this.tipo=tipo;
 		this.stazione = stazione;
 		this.food = food;
 	}

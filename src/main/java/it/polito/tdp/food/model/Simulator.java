@@ -20,14 +20,13 @@ public class Simulator {
   private List<Food> cibi;
   private Graph<Food, DefaultWeightedEdge> graph;
   private Model model;
-  private EventType tipo;
-   
+
   
-  public Simulator(Graph<Food, DefaultWeightedEdge> graph,EventType tipo,Model model) {
+  public Simulator(Graph<Food, DefaultWeightedEdge> graph,Model model) {
 		super();
 		this.graph = graph;
 		this.model=model;
-		this.tipo=tipo;
+	
 	}
 
 //Tipi di evento? -> coda prioritaria
@@ -114,7 +113,7 @@ for(int i=0; i<this.K && i< vicini.size() ;i++)
 {
 	  this.stazioni.get(i).setLibera(false);
 	  this.stazioni.get(i).setFood(vicini.get(i).getF());
-	  Evento e = new Evento(vicini.get(i).getPeso(), stazione, food)
+	  Evento e = new Evento(vicini.get(i).getPeso(),EventType<Event>, stazione, food);
 }
 	
 		  
