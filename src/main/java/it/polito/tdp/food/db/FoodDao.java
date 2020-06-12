@@ -27,10 +27,8 @@ public class FoodDao {
 			
 			while(res.next()) {
 				try {
-					Food f = new Food(res.getInt("food_code"),
-							res.getString("display_name")
-							);
-					map.put(res.getInt("food_code"), f);
+					
+					
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}

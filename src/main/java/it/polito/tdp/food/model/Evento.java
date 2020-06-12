@@ -1,23 +1,35 @@
 package it.polito.tdp.food.model;
 
 public class Evento implements Comparable<Evento> {
-	
+
 	public enum EventType{
 		INIZIO_PREPARAZIONE,
-		FINE_PREPARAZIONE,
+		FINE_PREPARAZIONE
+		
+		
+		
+	}
+	private EventType evento;
+	private Double time;
+	private Stazione station;
+	private Food food;
+	
+	
+	
+	public EventType getEvento() {
+		return evento;
 	}
 	
-	 private Double time;
-	 private Stazione stazione;
-	 private Food food;
-	 private EventType tipo;
-	 
-	public Evento(Double time,EventType tipo, Stazione stazione, Food food) {
+	public Double getTime() {
+		return time;
+	}
+
+	public Evento(EventType evento, Double time,Stazione station,Food food) {
 		super();
+		this.evento = evento;
 		this.time = time;
-		this.tipo=tipo;
-		this.stazione = stazione;
-		this.food = food;
+		this.station=station;
+		this.food=food;
 	}
 
 	@Override
@@ -26,16 +38,14 @@ public class Evento implements Comparable<Evento> {
 		return this.time.compareTo(o.getTime());
 	}
 
-	public Double getTime() {
-		return time;
-	}
-
-	public Stazione getStazione() {
-		return stazione;
+	public Stazione getStation() {
+		return station;
 	}
 
 	public Food getFood() {
 		return food;
 	}
+	
+	
 
 }
