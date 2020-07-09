@@ -14,115 +14,83 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
+import it.polito.tdp.food.db.Adiacenza;
 import it.polito.tdp.food.db.FoodDao;
+import it.polito.tdp.food.db.Vicino;
 
 public class Model {
-
-	private FoodDao dao ;
-	private Map<Integer,Food> mapId;
+	
 	private Graph<Food, DefaultWeightedEdge> graph;
-
-	public Model() {
-		
-		this.dao = new FoodDao();
-		this.mapId=new HashMap<>();
-		this.dao.listAllFoods(mapId);
-		this.graph = new SimpleWeightedGraph<Food, DefaultWeightedEdge>(DefaultWeightedEdge.class);
-	}
+	private Map<Integer,Food> map;
+	private FoodDao dao;
+	
 
 	public void creaGrafo(int n) {
-List<Food> list = this.dao.listFoodByPortions(mapId, n);
-if(list==null)
-{
-	System.out.print("Errore lettura FoodByPortions");
-	return;
-}
-Graphs.addAllVertices(this.graph, list);
-if(this.dao.listAdiacenze(mapId, n)==null)
-{
-	System.out.print("Errore lettura FoodByPortions");
-	return;
-}
-
-for (Adiacenza a : this.dao.listAdiacenze(mapId, n))
-{
-	DefaultWeightedEdge e = this.graph.getEdge(a.getF1(), a.getF2());
-	if(e==null)
+	this.graph= new SimpleWeightedGraph<Food, DefaultWeightedEdge>(DefaultWeightedEdge.class);
+		
+	if(this.dao.listAllFoodByPOrtion(n, map)==null)
 	{
-		Graphs.addEdge(this.graph,a.getF1(), a.getF2(), a.getPeso());
+		System.out.println("EErrore lettura vertex!\n");
+		return;
 	}
-}
 
+	System.out.println(this.dao.listAllFoodByPOrtion(n, map));
+	Graphs.addAllVertices(this.graph, this.dao.listAllFoodByPOrtion(n, map));
+	
+	if(this.dao.listAdiacenze( map)==null)
+	{
+		System.out.println("EErrore lettura edge!\n");
+		return;
 	}
 	
-	public int VertexSize()
+	for(Adiacenza a : this.dao.listAdiacenze(map) )
 	{
-		
-		return this.graph.vertexSet().size();
-	}
-
-	public int EdgeSize() {
-		// TODO Auto-generated method stub
-		return this.graph.edgeSet().size();
-	}
-	public List<Food> VertexSet()
-	{ List<Food> list = new ArrayList<>(this.graph.vertexSet());
-		Collections.sort(list);
-		return list;
-	}
-
-	public List<FoodAndCalories> CercaCalorie(Food f, int n) {
-		List<FoodAndCalories> list = new ArrayList<>();
-		Collections.sort(this.dao.listAdiacenze(mapId, n));
-		if(Graphs.neighborListOf(this.graph, f).size()==0)
+		if(this.graph.containsVertex(a.getF1()) && this.graph.containsVertex(a.getF2()))
 		{
-			return null;
-		}
-		else if(Graphs.neighborListOf(this.graph, f).size()<=5)
-		{
-			//System.out.println( "size :"+Graphs.neighborListOf(this.graph, f).size());
-			
-			for(Food v :Graphs.neighborListOf(this.graph, f))
+			DefaultWeightedEdge e=  this.graph.getEdge(a.getF1(), a.getF2());
+			if(e==null)
 			{
-				DefaultWeightedEdge e = this.graph.getEdge(f, v);
-				double peso = this.graph.getEdgeWeight(e);
-				list.add(new FoodAndCalories(v, peso));
+				Graphs.addEdge(this.graph, a.getF1(), a.getF2(), a.getPeso());
 			}
-			return list;
 		}
-		for(int i=0; i<5;i++)
+	}
+
+	}
+	
+	
+	public List<Vicino> listVicini( Food food)
+	{
+		List<Vicino> list = new ArrayList<>();
+		for(Food a : Graphs.neighborListOf(this.graph, food))
 		{
-			Food v = Graphs.neighborListOf(this.graph, f).get(i);
-				DefaultWeightedEdge e = this.graph.getEdge(f, v);
-				double peso = this.graph.getEdgeWeight(e);
-				list.add(new FoodAndCalories(v, peso));
+			list.add(new Vicino(a, this.graph.getEdgeWeight(this.graph.getEdge(food, a))));
 		}
+
+		
+		
+		Collections.sort(list);
+		
+		System.out.println(list);
+		
 		return list;
+	}
+
+	public Set<Food> setV() {
+		
+		return this.graph.vertexSet();
+	}
+
+	public Set<DefaultWeightedEdge> setE() {
+		
+		return this.graph.edgeSet();
+	}
+
+	public Model() {
+		this.dao= new FoodDao();
+		this.map= new HashMap<Integer, Food>();
+		this.dao.listAllFoods(map);
 		
 	}
 
-	public Graph<Food, DefaultWeightedEdge> getGraph() {
-		return graph;
-	}
-	
-	
-	public List<FoodAndCalories> ListFAC(Food f)
-	{	
-		List<FoodAndCalories> list = new ArrayList<>();
-		
-		if(Graphs.neighborListOf(this.graph, f).size()==0)
-		{
-			return null;
-		}
-		
-		for(Food v :Graphs.neighborListOf(this.graph, f))
-	{
-		DefaultWeightedEdge e = this.graph.getEdge(f, v);
-		double peso = this.graph.getEdgeWeight(e);
-		list.add(new FoodAndCalories(v, peso));
-	}
-		Collections.sort(list);
-	return list;
-	}
-	
+
 }

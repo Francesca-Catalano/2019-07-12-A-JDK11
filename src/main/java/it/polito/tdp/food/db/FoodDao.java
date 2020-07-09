@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import it.polito.tdp.food.model.Adiacenza;
 import it.polito.tdp.food.model.Condiment;
 import it.polito.tdp.food.model.Food;
 import it.polito.tdp.food.model.Portion;
@@ -28,6 +27,8 @@ public class FoodDao {
 			while(res.next()) {
 				try {
 					
+					Food f = new Food(res.getInt("food_code"), res.getString("display_name"));
+					map.put(res.getInt("food_code"),f);
 					
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -111,16 +112,19 @@ public class FoodDao {
 
 	}
 	
-	public List<Food> listFoodByPortions(Map<Integer,Food> map, int portion){
-		String sql = "select distinct food_code " + 
-				" from portion " + 
-				" group by food_code " + 
-				" having  count(distinct portion_id) = ? " ;
+	
+	
+
+	public List<Food> listAllFoodByPOrtion(int n,Map<Integer,Food> map){
+		String sql = "select food_code,count(distinct portion_id) as tot " + 
+				"from portion " + 
+				"group by food_code " + 
+				"having tot=? " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
 			PreparedStatement st = conn.prepareStatement(sql) ;
-			st.setInt(1, portion);
+			st.setInt(1, n);
 			
 			List<Food> list = new ArrayList<>() ;
 			
@@ -128,8 +132,8 @@ public class FoodDao {
 			
 			while(res.next()) {
 				try {
-					Food f = map.get(res.getInt("food_code"));
-					list.add(f);
+					list.add(map.get(res.getInt("food_code")));
+					
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -144,28 +148,22 @@ public class FoodDao {
 		}
 
 	}
+
 	
 	
-	public List<Adiacenza> listAdiacenze(Map<Integer,Food> map, int portion){
-		String sql ="select f1.food_code,f2.food_code , AVG(c.condiment_calories) as tot " + 
-				"from food_condiment as f1,food_condiment as f2, condiment as c " + 
-				"where f1.condiment_code=f2.condiment_code and f1.food_code>f2.food_code " + 
-				"and c.condiment_code=f1.condiment_code " + 
-				"and f1.food_code IN (select food_code " + 
-				" from portion " + 
-				" group by food_code " + 
-				" having  count(distinct portion_id) =?) " + 
-				"and f2.food_code IN (select food_code " + 
-				" from portion " + 
-				" group by food_code " + 
-				" having  count(distinct portion_id) = ?) " + 
-				"group by f1.food_code,f2.food_code ";
+
+	public List<Adiacenza> listAdiacenze(Map<Integer,Food> map){
+		String sql ="select  f1.food_code , f2.food_code , avg(c1.condiment_calories) as tot " + 
+				"from food_condiment as f1,food_condiment as f2, condiment as c1 " + 
+				"where f1.condiment_code =  f2.condiment_code " + 
+				"and f1.food_code <> f2.food_code " + 
+				"and c1.condiment_code=f2.condiment_code " + 
+				"group by f1.food_code , f2.food_code " ;
 		try {
 			Connection conn = DBConnect.getConnection() ;
 
 			PreparedStatement st = conn.prepareStatement(sql) ;
-			st.setInt(1, portion);
-			st.setInt(2, portion);
+	
 			
 			List<Adiacenza> list = new ArrayList<>() ;
 			
@@ -173,11 +171,8 @@ public class FoodDao {
 			
 			while(res.next()) {
 				try {
-					Food f1 = map.get(res.getInt("f1.food_code"));
-					Food f2 = map.get(res.getInt("f2.food_code"));
-					double peso = res.getDouble("tot");
+					list.add(new Adiacenza(map.get(res.getInt("f1.food_code")), map.get(res.getInt("f2.food_code")), res.getDouble("tot")));
 					
-					list.add(new Adiacenza(f1, f2, peso));
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -192,4 +187,6 @@ public class FoodDao {
 		}
 
 	}
+
+	
 }

@@ -8,9 +8,9 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import it.polito.tdp.food.model.Adiacenza;
+import it.polito.tdp.food.db.Vicino;
 import it.polito.tdp.food.model.Food;
-import it.polito.tdp.food.model.FoodAndCalories;
+
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,59 +52,72 @@ public class FoodController {
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
-    	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...\n");
-    	String s = this.txtPorzioni.getText();
-    	if(s==null)
-    	{
-    		this.txtResult.appendText("Inserire una porzione!\n");
-    		return;
-    	}
-    	int n;
-    	try {
-    		n= Integer.parseInt(s);
-    	}catch(NumberFormatException e)
-    	{
+    String s =	this.txtPorzioni.getText();
+    if(s==null)
+    {
+    this.txtResult.appendText("Inserire un valore!\n");	
+    return;
+    }
+    int n;
+    try {
+    	n=Integer.parseInt(s);
+    }
+    catch(NumberFormatException e)
+    {
+    	 this.txtResult.appendText("Formato non valio!\n");	
+    	    return;
+    }
+    this.model.creaGrafo(n);
+    this.boxFood.getItems().addAll( this.model.setV());
+    
+    this.txtResult.appendText("VERTEX : "+ this.model.setV().size()+"\n");	
+    this.txtResult.appendText("EDGE : "+ this.model.setE().size()+"\n");
+    this.txtResult.appendText("\n");
 
-    		this.txtResult.appendText("Formato non valido!\n");
-    		return;
-    	}
-    	this.model.creaGrafo(n);
-
-		this.txtResult.appendText("Vertex size:"+this.model.VertexSize()+"\n");
-		this.txtResult.appendText("Edge size:"+this.model.EdgeSize()+"\n");
-		this.boxFood.getItems().clear();
-		this.boxFood.getItems().addAll(this.model.VertexSet());
-		this.btnCalorie.setDisable(false);
-		this.btnSimula.setDisable(false);
+		  
+		 
+    
     	
     }
     
     @FXML
     void doCalorie(ActionEvent event) {
-    	txtResult.clear();
-    	txtResult.appendText("Analisi calorie...");
-    	Food f = this.boxFood.getValue();
-    	if(f==null)
-    	{
+    	
+    	
+        
+    	   if( this.boxFood.getValue() == null)
 
-    		this.txtResult.appendText("Selezionare un cibo!\n");
-    		return;	
-    	}
-    	String s = this.txtPorzioni.getText();
-    	int n= Integer.parseInt(s);
-    List<FoodAndCalories> list =	this.model.CercaCalorie(f,n);
-    if(list==null)
-    {
-    	this.txtResult.appendText("Nessun arco adiacente!\n");
-		return;	
-    }
-    this.txtResult.appendText("CIBO SELEZIONATO:  "+f.getDisplay_name());
-    this.txtResult.appendText("5 CIBI ADIACENTI CON PESO MAX:\n");
-    for(FoodAndCalories l : list)
-    {
-    	this.txtResult.appendText(l.getF()+" "+ String.valueOf(l.getPeso())+"\n");
-    }
+    	   {
+    		   this.txtResult.appendText("Scegliere un elemento!\n");	
+    		    return;
+    	   }
+    	   
+    	   
+    			
+    			  Food food = this.boxFood.getValue();
+    			  
+    			  this.txtResult.appendText("VICINI : \n");
+    			  if(this.model.listVicini(food) == null)
+    				  if(this.model.listVicini(food) == null)
+    				  {
+ 						 this.txtResult.appendText("Errore lettura !\n"); 
+ 						 return;
+ 					  }
+    					  
+    					  if(this.model.listVicini(food).size() == 0)
+    					  {
+    						 this.txtResult.appendText("Nessun arco adiacente!\n"); 
+    						 return;
+    					  }
+    					  
+    			// System.out.print(this.model.listVicini(food));
+    			  
+    			  
+    			  for(int i =0; i<5 && i<this.model.listVicini(food).size();i++) {
+    			  this.txtResult.appendText(this.model.listVicini(food).get(i).toString()+"\n")
+    			  ; 
+    			  }
+  
     }
 
     @FXML
@@ -126,7 +139,6 @@ public class FoodController {
     
     public void setModel(Model model) {
     	this.model = model;
-    	this.btnCalorie.setDisable(true);
-    	this.btnSimula.setDisable(true);
+    
     }
 }
